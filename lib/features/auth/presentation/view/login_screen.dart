@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:properties/core/utils/colors.dart';
 import 'package:properties/core/utils/styles.dart';
+import 'package:properties/features/auth/data/services/auth_service.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_button.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:properties/features/auth/presentation/view/signup_screen.dart';
@@ -17,8 +18,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _selectedUserType = 'Tenant'; // Default selected user type
+  final _authService = AuthService();
+  String _selectedUserType = 'Tenant';
   bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -27,24 +30,98 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      // Simulate login process
       setState(() {
         _isLoading = true;
+        _errorMessage = null;
       });
 
-      // In a real app, you would call your authentication service here
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        await _authService.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        // Navigate to home screen on success
+        if (mounted) {
+          // TODO: Replace with your home screen route
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+          // );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login successful!')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+
+      if (mounted) {
+        // TODO: Replace with your home screen route
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign in successful!')),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
+      }
+    }
+  }
 
-        // Navigate to home screen or show error
+  void _handleForgotPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email address')),
+      );
+      return;
+    }
+
+    try {
+      await _authService.resetPassword(email);
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful!')),
+          const SnackBar(content: Text('Password reset email sent!')),
         );
-      });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     }
   }
 
@@ -80,6 +157,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40),
 
+                if (_errorMessage != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
+                  ),
+
                 // Email field
                 const Text(
                   'Email',
@@ -95,7 +187,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
                       return 'Please enter a valid email';
                     }
                     return null;
@@ -112,9 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: AppStyles.bodyMedium,
                     ),
                     TextButton(
-                      onPressed: () {
-                        // Handle forgot password
-                      },
+                      onPressed: _handleForgotPassword,
                       child: const Text(
                         'Forgot Password?',
                         style: AppStyles.linkStyle,
@@ -181,9 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Google sign in
                 SocialButton(
                   text: 'Sign in with Google',
-                  onPressed: () {
-                    // Handle Google sign in
-                  },
+                  onPressed: _handleGoogleSignIn,
                   icon: SvgPicture.asset(
                     'assets/images/google_logo.svg',
                     height: 24,
@@ -233,7 +322,8 @@ class _LoginScreenState extends State<LoginScreen> {
             color: isSelected ? AppColors.primaryColor : Colors.white,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? AppColors.primaryColor : AppColors.dividerColor,
+              color:
+                  isSelected ? AppColors.primaryColor : AppColors.dividerColor,
             ),
           ),
           child: Center(
