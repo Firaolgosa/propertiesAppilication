@@ -6,6 +6,9 @@ import 'package:properties/features/auth/data/services/auth_service.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_button.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:properties/features/auth/presentation/view/signup_screen.dart';
+import 'package:properties/features/home/presentation/view/tenant_home.dart';
+import 'package:properties/features/home/presentation/view/owner_home.dart';
+import 'package:properties/features/home/presentation/view/manager_tenant.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -30,6 +33,34 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _navigateBasedOnRole(String? userType) {
+    if (!mounted) return;
+
+    Widget homeScreen;
+    switch (userType) {
+      case 'Tenant':
+        homeScreen = const TenantHomeScreen();
+        break;
+      case 'Owner':
+        homeScreen = const OwnerHomeScreen();
+        break;
+      case 'Manager':
+        homeScreen = const ManagerTenantScreen();
+        break;
+      default:
+        // Handle unknown user type
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid user type')),
+        );
+        return;
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => homeScreen),
+    );
+  }
+
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -38,21 +69,13 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       try {
-        await _authService.signInWithEmailAndPassword(
+        final result = await _authService.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // Navigate to home screen on success
         if (mounted) {
-          // TODO: Replace with your home screen route
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-          // );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login successful!')),
-          );
+          _navigateBasedOnRole(result['userType']);
         }
       } catch (e) {
         setState(() {
@@ -75,17 +98,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await _authService.signInWithGoogle();
+      final result = await _authService.signInWithGoogle(
+        userType: _selectedUserType,
+      );
 
       if (mounted) {
-        // TODO: Replace with your home screen route
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-        // );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Google sign in successful!')),
-        );
+        _navigateBasedOnRole(result['userType']);
       }
     } catch (e) {
       setState(() {
