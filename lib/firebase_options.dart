@@ -5,36 +5,16 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        // TODO: Replace with your Android configuration
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
-        // TODO: Replace with your iOS configuration
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -56,4 +36,32 @@ class DefaultFirebaseOptions {
         );
     }
   }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'YOUR-WEB-API-KEY',
+    appId: 'YOUR-WEB-APP-ID',
+    messagingSenderId: 'YOUR-SENDER-ID',
+    projectId: 'YOUR-PROJECT-ID',
+    authDomain: 'YOUR-PROJECT-ID.firebaseapp.com',
+    storageBucket: 'YOUR-PROJECT-ID.appspot.com',
+    measurementId: 'YOUR-MEASUREMENT-ID',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyA29GLEXwEyEiRs6kzcBF8KrATy5k4_taM',
+    appId: '1:511313335379:android:36d35043f56827d38462a6',
+    messagingSenderId: '511313335379',
+    projectId: 'properties-34ad8',
+    storageBucket: 'properties-34ad8.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'YOUR-IOS-API-KEY',
+    appId: 'YOUR-IOS-APP-ID',
+    messagingSenderId: 'YOUR-SENDER-ID',
+    projectId: 'YOUR-PROJECT-ID',
+    storageBucket: 'YOUR-PROJECT-ID.appspot.com',
+    iosClientId: 'YOUR-IOS-CLIENT-ID',
+    iosBundleId: 'YOUR-IOS-BUNDLE-ID',
+  );
 }
