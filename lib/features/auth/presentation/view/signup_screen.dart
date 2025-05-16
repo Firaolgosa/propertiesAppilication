@@ -77,7 +77,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
 
       try {
-        final result = await _authService.signUpWithEmailAndPassword(
+        await _authService.signUpWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
           userType: _selectedUserType,
@@ -85,7 +85,16 @@ class _SignupScreenState extends State<SignupScreen> {
         );
 
         if (mounted) {
-          _navigateBasedOnRole(_selectedUserType);
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created successfully! Please login.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Navigate back to login screen
+          Navigator.pop(context);
         }
       } catch (e) {
         setState(() {
@@ -108,12 +117,21 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      final result = await _authService.signInWithGoogle(
+      await _authService.signInWithGoogle(
         userType: _selectedUserType,
       );
 
       if (mounted) {
-        _navigateBasedOnRole(result['userType']);
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created successfully! Please login.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to login screen
+        Navigator.pop(context);
       }
     } catch (e) {
       setState(() {
