@@ -5,6 +5,9 @@ import 'package:properties/core/utils/styles.dart';
 import 'package:properties/features/auth/data/services/auth_service.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_button.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:properties/features/home/presentation/view/tenant_home.dart';
+import 'package:properties/features/home/presentation/view/owner_home.dart';
+import 'package:properties/features/home/presentation/view/manager_tenant.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -15,9 +18,9 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _authService = AuthService();
   String _selectedUserType = 'Tenant';
   bool _isLoading = false;
@@ -25,37 +28,64 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _navigateBasedOnRole(String? userType) {
+    if (!mounted) return;
+
+    Widget homeScreen;
+    switch (userType) {
+      case 'Tenant':
+        homeScreen = const TenantHomeScreen();
+        break;
+      case 'Owner':
+        homeScreen = const OwnerHomeScreen();
+        break;
+      case 'Manager':
+        homeScreen = const ManagerTenantScreen();
+        break;
+      default:
+        // Handle unknown user type
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid user type')),
+        );
+        return;
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => homeScreen),
+    );
   }
 
   Future<void> _handleSignup() async {
     if (_formKey.currentState!.validate()) {
+      if (_passwordController.text != _confirmPasswordController.text) {
+        setState(() {
+          _errorMessage = 'Passwords do not match';
+        });
+        return;
+      }
+
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
 
       try {
-        await _authService.signUpWithEmailAndPassword(
+        final result = await _authService.signUpWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
-          name: _nameController.text.trim(),
           userType: _selectedUserType,
+          name: '', // Default empty name since we removed the name field
         );
 
         if (mounted) {
-          // TODO: Replace with your home screen route
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-          // );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Account created successfully!')),
-          );
-          Navigator.pop(context); // Go back to login screen
+          _navigateBasedOnRole(_selectedUserType);
         }
       } catch (e) {
         setState(() {
@@ -71,24 +101,19 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
-  Future<void> _handleGoogleSignUp() async {
+  Future<void> _handleGoogleSignIn() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      await _authService.signInWithGoogle();
+      final result = await _authService.signInWithGoogle(
+        userType: _selectedUserType,
+      );
 
       if (mounted) {
-        // TODO: Replace with your home screen route
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-        // );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Google sign up successful!')),
-        );
+        _navigateBasedOnRole(result['userType']);
       }
     } catch (e) {
       setState(() {
@@ -101,10 +126,6 @@ class _SignupScreenState extends State<SignupScreen> {
         });
       }
     }
-  }
-
-  void _navigateToLogin() {
-    Navigator.pop(context);
   }
 
   @override
@@ -146,25 +167,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       style: TextStyle(color: Colors.red.shade700),
                     ),
                   ),
-
-                // Full Name field
-                const Text(
-                  'Full Name',
-                  style: AppStyles.bodyMedium,
-                ),
-                const SizedBox(height: 8),
-                CustomTextField(
-                  hintText: 'Enter your full name',
-                  prefixIcon: Icons.person_outline,
-                  controller: _nameController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
 
                 // Email field
                 const Text(
@@ -208,6 +210,29 @@ class _SignupScreenState extends State<SignupScreen> {
                     }
                     if (value.length < 8) {
                       return 'Password must be at least 8 characters long';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+
+                // Confirm Password field
+                const Text(
+                  'Confirm Password',
+                  style: AppStyles.bodyMedium,
+                ),
+                const SizedBox(height: 8),
+                CustomTextField(
+                  hintText: 'Confirm your password',
+                  prefixIcon: Icons.lock_outline,
+                  obscureText: true,
+                  controller: _confirmPasswordController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    }
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
                     }
                     return null;
                   },
@@ -258,7 +283,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 // Google sign up
                 SocialButton(
                   text: 'Sign up with Google',
-                  onPressed: _handleGoogleSignUp,
+                  onPressed: _handleGoogleSignIn,
                   icon: SvgPicture.asset(
                     'assets/images/google_logo.svg',
                     height: 24,
@@ -276,7 +301,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       style: AppStyles.bodyMedium,
                     ),
                     TextButton(
-                      onPressed: _navigateToLogin,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                       child: const Text(
                         'Sign In',
                         style: AppStyles.linkStyle,
