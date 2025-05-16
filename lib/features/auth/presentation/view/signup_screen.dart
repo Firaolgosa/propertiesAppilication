@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:properties/core/utils/colors.dart';
 import 'package:properties/core/utils/styles.dart';
+import 'package:properties/features/auth/data/services/auth_service.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_button.dart';
 import 'package:properties/features/auth/presentation/widgets/custom_text_field.dart';
 
@@ -17,8 +18,10 @@ class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _selectedUserType = 'Tenant'; // Default selected user type
+  final _authService = AuthService();
+  String _selectedUserType = 'Tenant';
   bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -28,27 +31,75 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _handleSignup() {
+  Future<void> _handleSignup() async {
     if (_formKey.currentState!.validate()) {
-      // Simulate signup process
       setState(() {
         _isLoading = true;
+        _errorMessage = null;
       });
 
-      // In a real app, you would call your authentication service here
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        await _authService.signUpWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          name: _nameController.text.trim(),
+          userType: _selectedUserType,
+        );
+
+        if (mounted) {
+          // TODO: Replace with your home screen route
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+          // );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Account created successfully!')),
+          );
+          Navigator.pop(context); // Go back to login screen
+        }
+      } catch (e) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignUp() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+
+      if (mounted) {
+        // TODO: Replace with your home screen route
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign up successful!')),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
-
-        // Navigate to home screen or show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created successfully!')),
-        );
-
-        // Navigate back to login screen
-        Navigator.pop(context);
-      });
+      }
     }
   }
 
@@ -80,6 +131,21 @@ class _SignupScreenState extends State<SignupScreen> {
                   style: AppStyles.bodyMedium,
                 ),
                 const SizedBox(height: 40),
+
+                if (_errorMessage != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
+                  ),
 
                 // Full Name field
                 const Text(
@@ -115,7 +181,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
                       return 'Please enter a valid email';
                     }
                     return null;
@@ -191,9 +258,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 // Google sign up
                 SocialButton(
                   text: 'Sign up with Google',
-                  onPressed: () {
-                    // Handle Google sign up
-                  },
+                  onPressed: _handleGoogleSignUp,
                   icon: SvgPicture.asset(
                     'assets/images/google_logo.svg',
                     height: 24,
@@ -243,7 +308,8 @@ class _SignupScreenState extends State<SignupScreen> {
             color: isSelected ? AppColors.primaryColor : Colors.white,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? AppColors.primaryColor : AppColors.dividerColor,
+              color:
+                  isSelected ? AppColors.primaryColor : AppColors.dividerColor,
             ),
           ),
           child: Center(
