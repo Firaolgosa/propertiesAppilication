@@ -46,7 +46,7 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
       children: [
         CircleAvatar(
           radius: 20,
-          backgroundImage: AssetImage('assets/images/profile_avatar.jpg'),
+          backgroundImage: const NetworkImage('https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80'),
         ),
         const SizedBox(width: 12),
         Column(
@@ -224,11 +224,37 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
-                child: Image.asset(
-                  'assets/images/apartment.jpg',
+                child: Image.network(
+                  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
                   height: 150,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 150,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 150,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: const Center(
+                        child: Icon(Icons.error_outline, color: Colors.grey),
+                      ),
+                    );
+                  },
                 ),
               ),
               Padding(
