@@ -58,7 +58,7 @@ class OwnerPropertiesScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildPropertyCard(
-                image: 'assets/images/skyline_apartments.jpg',
+                image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
                 name: 'Skyline Apartments',
                 address: '123 Main Street, New York, NY',
                 occupancyRate: 92,
@@ -67,7 +67,7 @@ class OwnerPropertiesScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildPropertyCard(
-                image: 'assets/images/riverside_townhomes.jpg',
+                image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
                 name: 'Riverside Townhomes',
                 address: '456 River Road, New York, NY',
                 occupancyRate: 100,
@@ -121,11 +121,37 @@ class OwnerPropertiesScreen extends StatelessWidget {
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
-                child: Image.asset(
+                child: Image.network(
                   image,
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 180,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 180,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: const Center(
+                        child: Icon(Icons.error_outline, color: Colors.grey),
+                      ),
+                    );
+                  },
                 ),
               ),
               Positioned(
