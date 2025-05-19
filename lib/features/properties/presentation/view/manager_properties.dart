@@ -1,0 +1,259 @@
+import 'package:flutter/material.dart';
+import 'package:properties/core/utils/colors.dart';
+import 'package:properties/core/widgets/app_bottom_navigation.dart';
+
+class ManagerPropertiesScreen extends StatelessWidget {
+  const ManagerPropertiesScreen({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Mon, May 19, 2025',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+            const Text(
+              'Properties',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildPropertyCard(
+              image: 'assets/images/skyline_apartments.jpg',
+              name: 'Skyline Apartments',
+              address: '123 Main Street, New York, NY',
+              occupancyRate: 92,
+              pendingTasks: 5,
+              units: 12,
+            ),
+            const SizedBox(height: 16),
+            _buildPropertyCard(
+              image: 'assets/images/riverside_townhomes.jpg',
+              name: 'Riverside Townhomes',
+              address: '456 River Road, New York, NY',
+              occupancyRate: 100,
+              pendingTasks: 2,
+              units: 8,
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: AppBottomNavigation(
+        currentIndex: 1, // Properties tab
+        onTap: (index) {
+          // The navigation is now handled in the AppBottomNavigation widget
+        },
+        userType: 'Manager',
+      ),
+    );
+  }
+
+  Widget _buildPropertyCard({
+    required String image,
+    required String name,
+    required String address,
+    required int occupancyRate,
+    required int pendingTasks,
+    required int units,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+                child: Image.asset(
+                  image,
+                  height: 150,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade100,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    '$occupancyRate%',
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  address,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Text(
+                      'Pending Tasks: $pendingTasks',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      'Units: $units',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
