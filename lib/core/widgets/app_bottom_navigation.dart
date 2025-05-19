@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:properties/features/home/presentation/view/manager_tenant.dart';
 import 'package:properties/features/home/presentation/view/owner_home.dart';
 import 'package:properties/features/home/presentation/view/tenant_home.dart';
+import 'package:properties/features/profile/presentation/view/profile.dart';
 import 'package:properties/features/properties/presentation/view/manager_properties.dart';
 import 'package:properties/features/properties/presentation/view/owner_properties.dart';
 import 'package:properties/features/properties/presentation/view/tenant_properties.dart';
@@ -64,8 +65,8 @@ class AppBottomNavigation extends StatelessWidget {
           label: 'Maintenance',
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.message),
-          label: 'Messages',
+          icon: Icon(Icons.person),
+          label: 'Profile',
         ),
       ]);
     } else {
@@ -80,8 +81,8 @@ class AppBottomNavigation extends StatelessWidget {
           label: 'Maintenance',
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.message),
-          label: 'Messages',
+          icon: Icon(Icons.person),
+          label: 'Profile',
         ),
       ]);
     }
@@ -133,10 +134,9 @@ class AppBottomNavigation extends StatelessWidget {
           // Add the appropriate screen when available
         }
         break;
-      case 4: // Messages tab
+      case 4: // Profile tab
         if (userType == 'Tenant' || userType == 'Manager' || userType == 'Owner') {
-          // Messages screen
-          // Add the appropriate screen when available
+          destinationScreen = ProfileScreen(userType: userType);
         }
         break;
     }
