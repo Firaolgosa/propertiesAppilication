@@ -548,7 +548,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
         ),
         const SizedBox(height: 16),
         _buildPropertyItem(
-          image: 'assets/images/skyline_apartments.jpg',
+          image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
           name: 'Skyline Apartments',
           units: '12 units • 92% occupied',
           income: '\$15,400/mo',
@@ -556,7 +556,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
         ),
         const SizedBox(height: 16),
         _buildPropertyItem(
-          image: 'assets/images/riverside_townhomes.jpg',
+          image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
           name: 'Riverside Townhomes',
           units: '8 units • 100% occupied',
           income: '\$12,800/mo',
@@ -593,11 +593,38 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
               topLeft: Radius.circular(12),
               bottomLeft: Radius.circular(12),
             ),
-            child: Image.asset(
+            child: Image.network(
               image,
               width: 80,
               height: 80,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  width: 80,
+                  height: 80,
+                  color: Colors.grey[200],
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                          : null,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 80,
+                  height: 80,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: Icon(Icons.error_outline, color: Colors.grey, size: 20),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(width: 12),
@@ -634,7 +661,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: vacancy.contains('No') ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                        color: vacancy.contains('No') ? Colors.green.shade50 : Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
