@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:properties/core/widgets/app_bottom_navigation.dart';
 
 class OwnerHomeScreen extends StatefulWidget {
   const OwnerHomeScreen({super.key});
@@ -657,38 +658,15 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
+    return AppBottomNavigation(
       currentIndex: _selectedIndex,
       onTap: (index) {
         setState(() {
           _selectedIndex = index;
         });
+        // Navigation is now handled in the AppBottomNavigation widget
       },
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.apartment),
-          label: 'Properties',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.attach_money),
-          label: 'Finances',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.build),
-          label: 'Maintenance',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.message),
-          label: 'Messages',
-        ),
-      ],
+      userType: 'Owner',
     );
   }
 }
@@ -701,7 +679,7 @@ class ChartPainter extends CustomPainter {
 
     // Draw grid lines
     final paint = Paint()
-      ..color = Colors.grey.withOpacity(0.2)
+      ..color = Colors.grey.withAlpha(51) // 0.2 opacity = 51/255
       ..strokeWidth = 1;
 
     for (int i = 0; i < 5; i++) {
@@ -710,7 +688,8 @@ class ChartPainter extends CustomPainter {
     }
 
     // Draw months on x-axis (simplified approach without TextPainter)
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    // Months array is defined but not used in this simplified implementation
+    // const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     // Draw income line
     final incomePaint = Paint()
@@ -742,7 +721,7 @@ class ChartPainter extends CustomPainter {
 
     // Draw income area
     final incomeAreaPaint = Paint()
-      ..color = Colors.blue.withOpacity(0.1)
+      ..color = Colors.blue.withAlpha(26) // 0.1 opacity = 26/255
       ..style = PaintingStyle.fill;
 
     final incomeAreaPath = Path.from(incomePath);
