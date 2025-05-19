@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:properties/core/utils/colors.dart';
+import 'package:properties/core/widgets/app_bottom_navigation.dart';
+import 'package:properties/features/properties/presentation/view/manager_properties.dart';
 
 class TenantHomeScreen extends StatefulWidget {
   const TenantHomeScreen({Key? key}) : super(key: key);
@@ -489,38 +491,15 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
+    return AppBottomNavigation(
       currentIndex: _selectedIndex,
       onTap: (index) {
         setState(() {
           _selectedIndex = index;
         });
+        // Navigation is now handled in the AppBottomNavigation widget
       },
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.apartment),
-          label: 'Properties',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.build),
-          label: 'Maintenance',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.message),
-          label: 'Messages',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
+      userType: 'Tenant',
     );
   }
 }
