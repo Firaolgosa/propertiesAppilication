@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:properties/core/widgets/app_bottom_navigation.dart';
+import 'package:properties/features/properties/presentation/view/add_property.dart';
 
 class OwnerPropertiesScreen extends StatelessWidget {
   const OwnerPropertiesScreen({super.key});
@@ -32,7 +33,12 @@ class OwnerPropertiesScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddPropertyScreen()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
@@ -73,7 +79,12 @@ class OwnerPropertiesScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddPropertyScreen()),
+          );
+        },
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add),
       ),

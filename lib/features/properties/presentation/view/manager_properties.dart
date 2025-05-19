@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:properties/core/utils/colors.dart';
 import 'package:properties/core/widgets/app_bottom_navigation.dart';
+import 'package:properties/features/properties/presentation/view/add_property.dart';
 
 class ManagerPropertiesScreen extends StatelessWidget {
-  const ManagerPropertiesScreen({Key? key}) : super(key: key);
+  const ManagerPropertiesScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +51,12 @@ class ManagerPropertiesScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddPropertyScreen()),
+          );
+        },
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add),
       ),

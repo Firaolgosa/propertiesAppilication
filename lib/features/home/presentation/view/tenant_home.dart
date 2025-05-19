@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:properties/core/utils/colors.dart';
 import 'package:properties/core/widgets/app_bottom_navigation.dart';
-import 'package:properties/features/properties/presentation/view/manager_properties.dart';
 
 class TenantHomeScreen extends StatefulWidget {
-  const TenantHomeScreen({Key? key}) : super(key: key);
+  const TenantHomeScreen({super.key});
 
   @override
   State<TenantHomeScreen> createState() => _TenantHomeScreenState();

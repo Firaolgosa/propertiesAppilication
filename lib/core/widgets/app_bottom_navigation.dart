@@ -4,6 +4,7 @@ import 'package:properties/features/home/presentation/view/owner_home.dart';
 import 'package:properties/features/home/presentation/view/tenant_home.dart';
 import 'package:properties/features/properties/presentation/view/manager_properties.dart';
 import 'package:properties/features/properties/presentation/view/owner_properties.dart';
+import 'package:properties/features/properties/presentation/view/tenant_properties.dart';
 
 class AppBottomNavigation extends StatelessWidget {
   final int currentIndex;
@@ -36,15 +37,28 @@ class AppBottomNavigation extends StatelessWidget {
         icon: Icon(Icons.home),
         label: 'Home',
       ),
-      const BottomNavigationBarItem(
+    ];
+
+    // Add user-specific second tab
+    if (userType == 'Tenant') {
+      items.add(const BottomNavigationBarItem(
+        icon: Icon(Icons.apartment),
+        label: 'My Unit',
+      ));
+    } else {
+      items.add(const BottomNavigationBarItem(
         icon: Icon(Icons.apartment),
         label: 'Properties',
-      ),
-    ];
+      ));
+    }
 
     // Add user-specific items
     if (userType == 'Tenant') {
       items.addAll([
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.attach_money),
+          label: 'Payments',
+        ),
         const BottomNavigationBarItem(
           icon: Icon(Icons.build),
           label: 'Maintenance',
@@ -52,10 +66,6 @@ class AppBottomNavigation extends StatelessWidget {
         const BottomNavigationBarItem(
           icon: Icon(Icons.message),
           label: 'Messages',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
         ),
       ]);
     } else {
@@ -102,34 +112,30 @@ class AppBottomNavigation extends StatelessWidget {
       case 1: // Properties tab
         if (userType == 'Owner') {
           destinationScreen = const OwnerPropertiesScreen();
+        } else if (userType == 'Tenant') {
+          destinationScreen = const TenantPropertiesScreen();
         } else {
           destinationScreen = const ManagerPropertiesScreen();
         }
         break;
-      case 2: // Finances or Maintenance tab
+      case 2: // Payments or Finances tab
         if (userType == 'Tenant') {
-          // Maintenance for Tenant
+          // Payments for Tenant
           // Add the appropriate screen when available
         } else {
           // Finances for Manager and Owner
           // Add the appropriate screen when available
         }
         break;
-      case 3: // Maintenance or Messages tab
-        if (userType == 'Tenant') {
-          // Messages for Tenant
-          // Add the appropriate screen when available
-        } else {
-          // Maintenance for Manager and Owner
+      case 3: // Maintenance tab
+        if (userType == 'Tenant' || userType == 'Manager' || userType == 'Owner') {
+          // Maintenance screen
           // Add the appropriate screen when available
         }
         break;
-      case 4: // Profile or Messages tab
-        if (userType == 'Tenant') {
-          // Profile for Tenant
-          // Add the appropriate screen when available
-        } else {
-          // Messages for Manager and Owner
+      case 4: // Messages tab
+        if (userType == 'Tenant' || userType == 'Manager' || userType == 'Owner') {
+          // Messages screen
           // Add the appropriate screen when available
         }
         break;
