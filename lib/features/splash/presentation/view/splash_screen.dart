@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 width: MediaQuery.of(context).size.width * 0.8,
                 fit: BoxFit.contain,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 70),
               // Loading indicator
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
